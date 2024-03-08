@@ -196,4 +196,4 @@ class gameData:
         print_str += f"所选文明: {civilization}\n"
         print_str += f"地图: {self.map}\n"
         print_str += f"胜利原因: {self.win_reason}\n"
-        return messages
+        return print_str
