@@ -1,9 +1,9 @@
-from api_access import check_player, get_last_match_id, get_game_info
+from .api_access import check_player, get_last_match_id, get_game_info
 from hoshino import Service, priv
-from text2img import image_draw
-from player import Player
+from .text2img import image_draw
+from .player import Player
 import json
-from game_data import gameData
+from .game_data import gameData
 
 sv = Service(
             'aoe4_watcher_bot',

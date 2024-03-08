@@ -3,6 +3,7 @@ from pathlib import Path
 import re
 import io
 import base64
+
 path = Path(__file__).parent # 获取文件所在目录的绝对路径
 font = str(path / 'fonts' / 'SourceHanSansCN-Medium.otf')  # Path是路径对象，必须转为str之后ImageFont才能读取
 LINE_CHAR_COUNT = 30*2  # 每行字符数：30个中文字符(=60英文字符)
