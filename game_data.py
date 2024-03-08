@@ -27,9 +27,10 @@ class gameData:
             total_cost_by_age[age] = total_cost_by_age[age]["total"]
         # print(total_cost_by_age)
         team = player.get("team")
-        kills = player.get("_stats").get("kills")
+        kills = player.get("_stats").get("elitekill")
+        civilization = player.get("civilization")
         # print(f"team: {team} kills: {kills}")
-        return profile_id, result, total_cost_by_age, team, kills
+        return profile_id, result, total_cost_by_age, team, kills, civilization
     
     def get_age_timing(self, player):
         """ Returns the highest age reached by any player in the game"""
@@ -162,7 +163,7 @@ class gameData:
         total_kills_team0 = 0
         total_kills_team1 = 0
         for i in range(len(self.players)):
-            player_profile_id, result, total_cost_by_age, team, kills = self.get_player(i)
+            player_profile_id, result, total_cost_by_age, team, kills, civilization = self.get_player(i)
             if total_cost_by_age["feudal"] > 6000:
                 kills = kills * 1.2
             if player_profile_id == profile_id:
@@ -188,8 +189,11 @@ class gameData:
             message_base = LOSE_POSTIVE
         else:
             message_base = LOSE_NEGATIVE
-        print_str += random.choice(message_base).format(nickname) + '\n'
+        print_str = random.choice(message_base).format(nickname) + '\n'
         print_str += f"开始时间: {self.started_at}\n"
         print_str += f"持续时间: {self.duration}\n"
         print_str += f"游戏模式: [{self.game_mode}]\n"
+        print_str += f"所选文明: {civilization}\n"
+        print_str += f"地图: {self.map}\n"
+        print_str += f"胜利原因: {self.win_reason}\n"
         return messages
