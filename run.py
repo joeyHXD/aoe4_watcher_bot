@@ -54,7 +54,7 @@ async def update():
             last_match_ID = get_last_match_id(player.profile_id)
             if last_match_ID != player.last_match_ID:
                 player.last_match_ID = last_match_ID
-                game_info = get_game_info(last_match_ID)
+                game_info = get_game_info(player.profile_id, last_match_ID)
                 game = gameData(game_info)
                 messages = game.get_messages(player)
     if messages:
