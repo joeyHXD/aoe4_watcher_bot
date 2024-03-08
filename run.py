@@ -16,8 +16,10 @@ sv = Service(
 
 proxies = {"http": "", "https": ""}
 
-def steam_id_convert_32_to_64(short_steamID):
-    return short_steamID + 76561197960265728
+@sv.on_prefix('转换id')
+async def steam_id_convert_32_to_64(bot, ev):
+    s = ev.message.extract_plain_text()
+    await bot.send(ev, str(int(s) + 76561197960265728)) 
 
 bot = sv.bot
 data = {}
