@@ -8,9 +8,9 @@
 搭建hoshino机器人请参考[Hoshino开源Project](https://github.com/Ice-Cirno/HoshinoBot)
 
 ## 安装指南
-1. clone本插件： 在 `HoshinoBot\hoshino\modules` 目录下使用以下命令拉取本项目
-2. `git clone https://github.com/joeyHXD/dota2_watcher_bot.git`
-3. 在 `HoshinoBot\hoshino\config\bot.py` 文件的 `MODULES_ON` 加入 `AOE4_WATCHER_BOT,`
+1. `pip install beautifulsoup4`
+2. clone本插件： 在 `HoshinoBot\hoshino\modules` 目录下使用以下命令拉取本项目
+3. 在 `HoshinoBot\hoshino\config\bot.py` 文件的 `MODULES_ON` 加入 `aoe4_watcher_bot,`
 4. 然后重启 HoshinoBot，并在想要使用的QQ群里输入指令 `启用 aoe4_watcher_bot` 或者 `enable aoe4_watcher_bot`
 5. 用steam短id查询steam的17位id: `转换id [steam短id]` 如： `转换id 222233344`
 6. 添加玩家： `添加帝四玩家 [玩家昵称] [steam的17位id]`
