@@ -3,6 +3,7 @@ from hoshino import Service, priv
 from .text2img import image_draw
 from .player import Player
 import json
+import os
 from .game_data import gameData
 
 sv = Service(
@@ -23,7 +24,7 @@ async def steam_id_convert_32_to_64(bot, ev):
 
 bot = sv.bot
 data = {}
-player_info_path = "playerInfo.json"
+player_info_path = os.path.join(os.path.dirname(__file__), "playerInfo.json")
 
 with open(player_info_path, encoding="utf-8") as file:
     tmp = json.load(file)
