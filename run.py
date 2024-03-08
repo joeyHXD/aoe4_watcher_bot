@@ -60,8 +60,8 @@ async def update():
                 break
     if messages:
         data[gid] = player_list
-        sv.logger.info(msg)
-        pic = image_draw(msg)
+        sv.logger.info(messages)
+        pic = image_draw(messages)
         try:
             await bot.send_group_msg(group_id=gid, message=f'[CQ:image,file={pic}]')
         except:
