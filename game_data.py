@@ -1,6 +1,6 @@
 import datetime
 import random
-from .DOTA2_dicts import WIN_POSTIVE, WIN_NEGATIVE, LOSE_POSTIVE, LOSE_NEGATIVE
+from .AOE4_dicts import WIN_POSTIVE, WIN_NEGATIVE, LOSE_POSTIVE, LOSE_NEGATIVE, CIVILIZATION, AGE, REASON
 from .api_access import get_item_info
 
 building_info, upgrade_info, unit_info = get_item_info()
@@ -272,9 +272,9 @@ class gameData:
         print_str += f"持续时间: {self.duration}\n"
         print_str += f"游戏模式: {self.game_mode}\n"
         print_str += f"地图: {self.map}\n"
-        print_str += f"胜利原因: {self.win_reason}\n"
-        print_str += f"所选文明: {my_civilization}\n"
-        print_str += f"最高时代: {my_highest_age}({my_highest_age_timing}),\n"
+        print_str += f"胜利条件: {REASON.get(self.win_reason, self.win_reason)}\n"
+        print_str += f"所选文明: {CIVILIZATION.get(my_civilization, my_civilization)}\n"
+        print_str += f"最高时代: {AGE[my_highest_age]}({my_highest_age_timing}),\n"
         print_str += f"农民数量: {my_villager_count},\n"
         print_str += f"总击杀: {my_kills}({my_kills_rate:.2f}%),\n"
         print_str += f"TC数量: {my_tc_count}\n"
