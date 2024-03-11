@@ -59,9 +59,15 @@ AGE = {
 }
 
 REASON = {
+    "Annihilation": "单位全灭", # 不确定是否正确
+    "Conquest": "地标胜利",
+    "Culture": "文化胜利", # 不确定是否正确
+    "Elimination": "对手退出",
+    "Regicide": "击杀国王", # 不确定是否正确
+    "Religious": "宗教胜利", # 不确定是否正确
+    "Score": "分数胜利", # 不确定是否正确
     "Surrender": "对手投降",
-    "Conquest": "征服胜利",
-    "Elimination": "全灭胜利?",
-    "Relic": "神圣胜利", # 不确定
-    "Wonder": "奇观胜利", # 不确定
+    "Solidarity": "团队胜利", # 不确定是否正确
+    "Treaty": "外交胜利", # 不确定是否正确
+    "Wonder": "奇观胜利", # 不确定是否正确
 }

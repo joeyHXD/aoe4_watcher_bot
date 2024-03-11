@@ -256,7 +256,11 @@ class gameData:
         # 检测击杀数是否达标
         player_count_my_team = len(self.players) / 2
         my_kills_rate = my_kills / total_true_kills_my_team * 100
-        positive = my_balanced_kills > total_kills_my_team / player_count_my_team
+        positive = my_balanced_kills >= total_kills_my_team / player_count_my_team
+        print(my_result)
+        print(player_count_my_team)
+        print(my_balanced_kills, total_kills_my_team)
+        print(positive)
         # 检测是否胜利
         win = my_result == "win"
         if win and positive:
