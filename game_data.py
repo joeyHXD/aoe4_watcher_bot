@@ -1,11 +1,14 @@
 import datetime
 import random
-from .DOTA2_dicts import WIN_POSTIVE, WIN_NEGATIVE, LOSE_POSTIVE, LOSE_NEGATIVE
-from .api_access import get_item_info
+from DOTA2_dicts import WIN_POSTIVE, WIN_NEGATIVE, LOSE_POSTIVE, LOSE_NEGATIVE
+from api_access import get_item_info
 
 building_info, upgrade_info, unit_info = get_item_info()
 
 class gameData:
+    villager_id = "11119068"
+    gilded_villager_id = "11254058"
+    town_center_id = "11119069"
     def __init__(self, data):
         self.data = data
         self.game_id = data['gameId']
@@ -20,17 +23,42 @@ class gameData:
 
     def get_player(self, i):
         player = self.players[i]
+        return player
+    
+    def get_player_profile_id(self, player):
         profile_id = player.get("profileId")
+        if not profile_id:
+            print("error: profile_id not found in gameData")
+        return profile_id
+    
+    def get_player_result(self, player):
         result = player.get("result")
+        return result
+    
+    def get_player_cost_by_age(self, player):
         total_cost_by_age = self.get_production_cost_by_age(player)
         for age in total_cost_by_age:
             total_cost_by_age[age] = total_cost_by_age[age]["total"]
-        # print(total_cost_by_age)
+        return total_cost_by_age
+    
+    def get_player_team(self, player):
         team = player.get("team")
+        if not team:
+            print("error: team not found in gameData")
+        return team
+    
+    def get_player_kills(self, player):
         kills = player.get("_stats").get("elitekill")
+        if not kills:
+            print("error: kills not found in gameData")
+            kills = 0
+        return kills
+    
+    def get_player_civilization(self, player):
         civilization = player.get("civilization")
-        # print(f"team: {team} kills: {kills}")
-        return profile_id, result, total_cost_by_age, team, kills, civilization
+        if not civilization:
+            print("error: civilization not found in gameData")
+        return civilization
     
     def get_age_timing(self, player):
         """ Returns the highest age reached by any player in the game"""
@@ -55,8 +83,31 @@ class gameData:
             return "feudal"
         return "dark"
     
+    def get_specific_age_timing(self, player, age):
+        """ Returns the time at which a specific age was reached by a player"""
+        feudal, castle, imperial = self.get_age_timing(player)
+        if age == "imperial":
+            return imperial
+        if age == "castle":
+            return castle
+        if age == "feudal":
+            return feudal
+        return 0
+
     def get_build_order(self, player):
         return player["buildOrder"]
+
+    def get_villager_count(self, player):
+        build_order = self.get_build_order(player)
+        for item in build_order:
+            if item.get("pbgid") == self.villager_id or item.get("pbgid") == self.gilded_villager_id:
+                return len(item.get("finished"))
+
+    def get_tc_count(self, player):
+        build_order = self.get_build_order(player)
+        for item in build_order:
+            if item.get("pbgid") == self.town_center_id:
+                return len(item.get("finished"))
 
     def get_production_cost_by_age(self, player):
         """ Returns the total cost of all units produced by age"""
@@ -128,7 +179,7 @@ class gameData:
                 total_cost[resource_type] += count * item_cost[resource_type]
             total_cost_by_age[age] = total_cost
         return total_cost_by_age
-    
+
     def get_item_info(self, type, pbgid):
         pbgid = str(pbgid)
         if type == "Unit":
@@ -156,31 +207,48 @@ class gameData:
     def get_messages(self, player):
         profile_id = player.profile_id
         nickname = player.nickname
-        messages = []
-        my_kills = 0
-        my_team = 0
+        # 因为不知道哪个是自己，所以需要遍历所有玩家
+        my_player = None
         total_kills_my_team = 0
         total_kills_team0 = 0
         total_kills_team1 = 0
         for i in range(len(self.players)):
-            player_profile_id, result, total_cost_by_age, team, kills, civilization = self.get_player(i)
+            this_player = self.get_player(i)
+            player_profile_id = self.get_player_profile_id(this_player)
+            total_cost_by_age = self.get_player_cost_by_age(this_player)
+            team = self.get_player_team(this_player)
+            kills = self.get_player_kills(this_player)
             if total_cost_by_age["feudal"] > 6000:
+                # 如果卷2本，击杀数加成20%
                 kills = kills * 1.2
             if player_profile_id == profile_id:
-                my_kills = kills
-                my_team = team
+                my_player = this_player
+                my_balanced_kills = kills
             if team == 0:
                 total_kills_team0 += kills
             else:
                 total_kills_team1 += kills
+
+        my_kills = self.get_player_kills(my_player)
+        my_team = self.get_player_team(my_player)
+        my_result = self.get_player_result(my_player)
+        my_civilization = self.get_player_civilization(my_player)
+        my_tc_count = self.get_tc_count(my_player)
+        my_villager_count = self.get_villager_count(my_player)
+        my_highest_age = self.get_highest_age(my_player)
+        my_highest_age_timing = self.get_specific_age_timing(my_player, my_highest_age)
+        my_highest_age_timing = str(datetime.timedelta(seconds=my_highest_age_timing))
+
         if my_team == 0:
             total_kills_my_team = total_kills_team0
         else:
             total_kills_my_team = total_kills_team1
         # 检测击杀数是否达标
-        positive = my_kills > total_kills_my_team * 2 / len(self.players) and result == "win"
+        player_count_my_team = len(self.players) / 2
+        my_kills_rate = my_kills / total_kills_my_team * 100
+        positive = my_balanced_kills > total_kills_my_team / player_count_my_team
         # 检测是否胜利
-        win = result == "win"
+        win = my_result == "win"
         if win and positive:
             message_base = WIN_POSTIVE
         elif win and not positive:
@@ -193,7 +261,11 @@ class gameData:
         print_str += f"开始时间: {self.started_at}\n"
         print_str += f"持续时间: {self.duration}\n"
         print_str += f"游戏模式: [{self.game_mode}]\n"
-        print_str += f"所选文明: {civilization}\n"
         print_str += f"地图: {self.map}\n"
         print_str += f"胜利原因: {self.win_reason}\n"
+        print_str += f"所选文明: {my_civilization}\n"
+        print_str += f"最高时代: {my_highest_age}(my_highest_age_timing),\n"
+        print_str += f"农民数量: {my_villager_count},\n"
+        print_str += f"总击杀: {my_kills}({my_kills_rate:.2f}%),\n"
+        print_str += f"TC数量: {my_tc_count},\n"
         return print_str
