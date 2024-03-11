@@ -57,16 +57,16 @@ async def update():
                 game_info = get_game_info(player.profile_id, last_match_ID)
                 game = gameData(game_info)
                 messages = game.get_messages(player)
+                break
     if messages:
         data[gid] = player_list
-        for msg in messages:
-            sv.logger.info(msg)
-            pic = image_draw(msg)
-            try:
-                await bot.send_group_msg(group_id=gid, message=f'[CQ:image,file={pic}]')
-            except:
-                sv.logger.info(f"临时会话图片发送失败")
-                await bot.send_group_msg(group_id=gid, message="图片发送失败")
+        sv.logger.info(messages)
+        pic = image_draw(messages)
+        try:
+            await bot.send_group_msg(group_id=gid, message=f'[CQ:image,file={pic}]')
+        except:
+            sv.logger.info(f"临时会话图片发送失败")
+            await bot.send_group_msg(group_id=gid, message="图片发送失败")
         save_to_json()
     sv.logger.info("done")
 
