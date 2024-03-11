@@ -43,7 +43,7 @@ class gameData:
     
     def get_player_team(self, player):
         team = player.get("team")
-        if not team:
+        if team == None:
             print("error: team not found in gameData")
         return team
     
@@ -100,14 +100,16 @@ class gameData:
     def get_villager_count(self, player):
         build_order = self.get_build_order(player)
         for item in build_order:
-            if item.get("pbgid") == self.villager_id or item.get("pbgid") == self.gilded_villager_id:
+            if item.get("id") == self.villager_id or item.get("id") == self.gilded_villager_id:
                 return len(item.get("finished"))
 
     def get_tc_count(self, player):
         build_order = self.get_build_order(player)
+        count = 0
         for item in build_order:
-            if item.get("pbgid") == self.town_center_id:
-                return len(item.get("finished"))
+            if item.get("id") == self.town_center_id:
+                count += len(item.get("constructed"))
+        return count
 
     def get_production_cost_by_age(self, player):
         """ Returns the total cost of all units produced by age"""
@@ -209,15 +211,20 @@ class gameData:
         nickname = player.nickname
         # 因为不知道哪个是自己，所以需要遍历所有玩家
         my_player = None
-        total_kills_my_team = 0
         total_kills_team0 = 0
         total_kills_team1 = 0
+        total_true_kills_team0 = 0
+        total_true_kills_team1 = 0
         for i in range(len(self.players)):
             this_player = self.get_player(i)
             player_profile_id = self.get_player_profile_id(this_player)
             total_cost_by_age = self.get_player_cost_by_age(this_player)
             team = self.get_player_team(this_player)
             kills = self.get_player_kills(this_player)
+            if team == 0:
+                total_true_kills_team0 += kills
+            else:
+                total_true_kills_team1 += kills
             if total_cost_by_age["feudal"] > 6000:
                 # 如果卷2本，击杀数加成20%
                 kills = kills * 1.2
@@ -238,14 +245,17 @@ class gameData:
         my_highest_age = self.get_highest_age(my_player)
         my_highest_age_timing = self.get_specific_age_timing(my_player, my_highest_age)
         my_highest_age_timing = str(datetime.timedelta(seconds=my_highest_age_timing))
-
+        total_kills_my_team = 0
+        total_true_kills_my_team = 0
         if my_team == 0:
+            total_true_kills_my_team = total_true_kills_team0
             total_kills_my_team = total_kills_team0
         else:
+            total_true_kills_my_team = total_true_kills_team1
             total_kills_my_team = total_kills_team1
         # 检测击杀数是否达标
         player_count_my_team = len(self.players) / 2
-        my_kills_rate = my_kills / total_kills_my_team * 100
+        my_kills_rate = my_kills / total_true_kills_my_team * 100
         positive = my_balanced_kills > total_kills_my_team / player_count_my_team
         # 检测是否胜利
         win = my_result == "win"
@@ -260,12 +270,12 @@ class gameData:
         print_str = random.choice(message_base).format(nickname) + '\n'
         print_str += f"开始时间: {self.started_at}\n"
         print_str += f"持续时间: {self.duration}\n"
-        print_str += f"游戏模式: [{self.game_mode}]\n"
+        print_str += f"游戏模式: {self.game_mode}\n"
         print_str += f"地图: {self.map}\n"
         print_str += f"胜利原因: {self.win_reason}\n"
         print_str += f"所选文明: {my_civilization}\n"
-        print_str += f"最高时代: {my_highest_age}(my_highest_age_timing),\n"
+        print_str += f"最高时代: {my_highest_age}({my_highest_age_timing}),\n"
         print_str += f"农民数量: {my_villager_count},\n"
         print_str += f"总击杀: {my_kills}({my_kills_rate:.2f}%),\n"
-        print_str += f"TC数量: {my_tc_count},\n"
+        print_str += f"TC数量: {my_tc_count}\n"
         return print_str
