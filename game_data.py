@@ -277,5 +277,5 @@ class gameData:
         print_str += f"最高时代: {AGE[my_highest_age]}({my_highest_age_timing}),\n"
         print_str += f"农民数量: {my_villager_count},\n"
         print_str += f"总击杀: {my_kills}({my_kills_rate:.2f}%),\n"
-        print_str += f"TC数量: {my_tc_count}\n"
+        print_str += f"TC数量: {my_tc_count}"
         return print_str
