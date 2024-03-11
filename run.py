@@ -51,16 +51,15 @@ async def update():
     messages = ""
     for gid, player_list in data.items():
         for player in player_list:
-            last_match_ID = get_last_match_id(player.profile_id)
-            if last_match_ID != player.last_match_ID:
-                player.last_match_ID = last_match_ID
+            last_match_ID, updated_at = get_last_match_id(player.profile_id)
+            if updated_at != player.updated_at:
+                player.updated_at = updated_at
                 try:
                     game_info = get_game_info(player.profile_id, last_match_ID)
                     game = gameData(game_info)
                     messages = game.get_messages(player)
                 except:
-                    messages = f"获取{player.nickname}的游戏数据失败，可能是因为玩家没有公开游戏数据"
-                    sv.logger.info(messages)
+                    sv.logger.info(f"获取{player.nickname}的游戏数据失败，可能是没有公开或正在进行中")
                 break
     if messages:
         data[gid] = player_list
@@ -91,7 +90,7 @@ async def add_aoe4_player(bot, ev):
     # 新建一个玩家对象, 放入玩家列表
     temp_player = Player(profile_id=profile_id,
                          nickname=nickname,
-                         last_match_ID=0)
+                         updated_at=0)
     if gid not in data:
         data[gid] = []
     for player in data[gid]:

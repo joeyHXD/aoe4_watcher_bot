@@ -53,7 +53,7 @@ def get_last_match_id(id):
     try:
         resp = session.get(url).text
         data = json.loads(resp)
-        return data["game_id"]
+        return data["game_id"], data["updated_at"]
     except Exception:
         logger.exception("")
         return None
