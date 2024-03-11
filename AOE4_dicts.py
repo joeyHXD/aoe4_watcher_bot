@@ -61,6 +61,7 @@ AGE = {
 REASON = {
     "Surrender": "对手投降",
     "Conquest": "征服胜利",
+    "Elimination": "全灭胜利?",
     "Relic": "神圣胜利", # 不确定
     "Wonder": "奇观胜利", # 不确定
 }

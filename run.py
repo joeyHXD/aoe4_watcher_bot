@@ -54,9 +54,13 @@ async def update():
             last_match_ID = get_last_match_id(player.profile_id)
             if last_match_ID != player.last_match_ID:
                 player.last_match_ID = last_match_ID
-                game_info = get_game_info(player.profile_id, last_match_ID)
-                game = gameData(game_info)
-                messages = game.get_messages(player)
+                try:
+                    game_info = get_game_info(player.profile_id, last_match_ID)
+                    game = gameData(game_info)
+                    messages = game.get_messages(player)
+                except:
+                    messages = f"获取{player.nickname}的游戏数据失败，可能是因为玩家没有公开游戏数据"
+                    sv.logger.info(messages)
                 break
     if messages:
         data[gid] = player_list
