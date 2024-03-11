@@ -1,7 +1,7 @@
 import datetime
 import random
-from DOTA2_dicts import WIN_POSTIVE, WIN_NEGATIVE, LOSE_POSTIVE, LOSE_NEGATIVE
-from api_access import get_item_info
+from .DOTA2_dicts import WIN_POSTIVE, WIN_NEGATIVE, LOSE_POSTIVE, LOSE_NEGATIVE
+from .api_access import get_item_info
 
 building_info, upgrade_info, unit_info = get_item_info()
 
