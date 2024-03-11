@@ -1,7 +1,7 @@
 # AOE4战绩查询bot,hoshino插件
 
 ## 介绍
-通过AOE4WORLD的API查询战绩
+爬取AOE4WORLD的数据，实时通报战绩变化
 
 这是一个hoshino机器人的插件，需要添加到hoshino本体里才能运行
 
@@ -23,8 +23,7 @@
 
 然后就可以打一把快乐的帝四试试效果啦！
 ## 运行效果
-TODO
+![image](sample_output.jpg)
 
 ## 后续计划
-- [ ] 通报战绩
-- [ ] 查询玩家战绩
+- [ ] 翻译各项数据
