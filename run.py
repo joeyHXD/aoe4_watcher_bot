@@ -52,12 +52,23 @@ async def update():
     for gid, player_list in data.items():
         for player in player_list:
             last_match_ID, updated_at = get_last_match_id(player.profile_id)
-            if updated_at != player.updated_at:
+            if updated_at != player.updated_at and last_match_ID != player.last_match_ID:
+                """
+                更新时间updated_at永远会更新
+                最后一场比赛ID last_match_ID只有成功获取到比赛数据时才会更新
+                这里有四种情况
+                1. 最后一场比赛ID和更新时间都不同，说明有新的比赛
+                2. 最后一场比赛ID和更新时间都相同，说明没有新的比赛
+                3. 最后一场比赛ID不同，但更新时间相同，说明有新的比赛，但是获取比赛数据失败
+                4. 最后一场比赛ID相同，但更新时间不同，说明比赛数据已经获取过了，但是网站上的数据更新了，不需要再次获取
+                所以，只有在情况1下才需要获取比赛数据
+                """
                 player.updated_at = updated_at
                 try:
                     game_info = get_game_info(player.profile_id, last_match_ID)
                     game = gameData(game_info)
                     messages = game.get_messages(player)
+                    player.last_match_ID = last_match_ID
                 except:
                     sv.logger.info(f"获取{player.nickname}的游戏数据失败，可能是没有公开或正在进行中")
                 break
@@ -69,7 +80,7 @@ async def update():
             await bot.send_group_msg(group_id=gid, message=f'[CQ:image,file={pic}]')
         except:
             sv.logger.info(f"临时会话图片发送失败")
-            await bot.send_group_msg(group_id=gid, message="图片发送失败")
+            # await bot.send_group_msg(group_id=gid, message="图片发送失败")
         save_to_json()
     sv.logger.info("done")
 
@@ -90,7 +101,8 @@ async def add_aoe4_player(bot, ev):
     # 新建一个玩家对象, 放入玩家列表
     temp_player = Player(profile_id=profile_id,
                          nickname=nickname,
-                         updated_at=0)
+                         updated_at=0,
+                         last_match_ID=0)
     if gid not in data:
         data[gid] = []
     for player in data[gid]:
